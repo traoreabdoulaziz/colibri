@@ -1,7 +1,7 @@
 import json
 import os
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= "colibri-test-349114-a30e8b514e6d.json"
-os.environ['ENV']="local"
+os.environ['ENV']="dev"
 ENV = os.environ.get('ENV')
 with open('secrets.json', 'r') as f:
     secret = json.load(f)[ENV]
