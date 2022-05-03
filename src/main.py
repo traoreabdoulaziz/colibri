@@ -4,10 +4,10 @@ from fastapi import FastAPI,Form
 import jwt
 from fastapi import Depends, HTTPException, status,Form,Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from api.model.user import User
-from config.config import JWT_SECRET
-from api.routes import router
-from api.service.auth import authenticate_user
+from .api.model.user import User
+from .config.config import JWT_SECRET
+from .api.routes import router
+from .api.service.auth import authenticate_user
 import os
 
 ## load variable environment

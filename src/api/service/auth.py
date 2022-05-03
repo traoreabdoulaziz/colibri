@@ -1,11 +1,11 @@
 
-from api.model.user import User
+from ..model.user import User
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.hash import bcrypt     
-from config.config  import JWT_SECRET,ACCESS_TOKEN_EXPIRE_MINUTES
+from ...config.config  import JWT_SECRET,ACCESS_TOKEN_EXPIRE_MINUTES
 from fastapi import Depends, HTTPException, status
 import jwt
-from api.service.user import findAuthUser
+from ..service.user import findAuthUser
 
 ## define the url
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')

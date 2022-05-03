@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Body
-from api.service.user import save_user
-from api.model.user import User
+from ..service.user import save_user
+from ..model.user import User
 from passlib.hash import bcrypt 
 
 ## create route

@@ -1,6 +1,6 @@
 
 from fastapi import Depends, HTTPException, status
-from api.model.user import User
+from ..model.user import User
 from passlib.hash import bcrypt
 
 ## find the authenticate user

@@ -1,7 +1,7 @@
 import datetime
 import os
 import tempfile
-from config.config import BUCKET_NAME,STORAGE_CLIENT,s3_client,s3_resource
+from ...config.config import BUCKET_NAME,STORAGE_CLIENT,s3_client,s3_resource
 ENV = os.environ.get('ENV')
 
 

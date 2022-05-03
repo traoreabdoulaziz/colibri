@@ -2,9 +2,9 @@
 from anyio import Path
 from fastapi import APIRouter, File, Depends, UploadFile
 import datetime
-from api.model.user import User
-from api.service.auth import get_current_user
-from api.service.file_service import save_file_to_storage,download_file_to_storage,verify_file_existance
+from ..model.user import User
+from ..service.auth import get_current_user
+from ..service.file_service import save_file_to_storage,download_file_to_storage,verify_file_existance
 
 
 router = APIRouter()
