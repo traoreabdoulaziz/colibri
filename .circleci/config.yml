@@ -1,0 +1,95 @@
+version: 2.1
+orbs:
+  gcp-gcr: circleci/gcp-gcr@0.13.0
+  cloudrun: circleci/gcp-cloud-run@1.0.2
+
+jobs:
+    build_deploy_master:
+      docker:
+        - image: circleci/python:3.8
+      environment:
+        IMAGE_NAME: colibri-image
+        REGISTRY_URL: docker.pkg.dev
+      steps:
+        - checkout
+        - setup_remote_docker:
+            version: 19.03.13
+            docker_layer_caching: true
+        - run:
+            name: Build app and Docker image
+            command: |
+              echo ${GCP_PROJECT_KEY} | base64 -d -i > $HOME/gcloud-service-key.json
+              echo 'export GOOGLE_CLOUD_KEYS=$(cat $HOME/gcloud-service-key.json)' >> $BASH_ENV
+              docker build -t $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME .
+        - gcp-gcr/gcr-auth:
+            gcloud-service-key: GOOGLE_CLOUD_KEYS
+            google-project-id: GOOGLE_PROJECT_ID
+            google-compute-zone: GOOGLE_COMPUTE_ZONE
+        - run:
+            name: push to artefact repository
+            command: |
+              gcloud auth configure-docker $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL
+              docker push $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
+        - cloudrun/deploy:
+            image: $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
+            platform: "managed"
+            region: $GOOGLE_COMPUTE_ZONE
+            service-name: $SERVICE_NAME
+            unauthenticated: true
+  
+    build_deploy_dev:
+      docker:
+        - image: circleci/python:3.8
+      environment:
+        IMAGE_NAME: colibri-dev
+        REGISTRY_URL: docker.pkg.dev
+      steps:
+        - checkout
+        - setup_remote_docker:
+            version: 19.03.13
+            docker_layer_caching: true
+        - run:
+            name: decrypt secrets
+            command: | 
+              ls
+              gpg --pinentry-mode=loopback --yes --passphrase="12345678" secrets.json.gpg
+        - run:
+            name: Build app and Docker image for dev
+            command: |
+              echo ${GCP_PROJECT_KEY} | base64 -d -i > $HOME/gcloud-service-key.json
+              echo 'export GOOGLE_CLOUD_KEYS=$(cat $HOME/gcloud-service-key.json)' >> $BASH_ENV
+              docker build -t $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME .
+        - gcp-gcr/gcr-auth:
+            gcloud-service-key: GOOGLE_CLOUD_KEYS
+            google-project-id: GOOGLE_PROJECT_ID
+            google-compute-zone: GOOGLE_COMPUTE_ZONE
+        - run:
+            name: push to artefact repository for dev
+            command: |
+              gcloud auth configure-docker $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL
+              docker push $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
+        - cloudrun/deploy:
+            image: $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
+            platform: "managed"
+            region: $GOOGLE_COMPUTE_ZONE
+            service-name: $SERVICE_NAME_DEV
+            unauthenticated: true
+
+
+   
+# Invoke jobs via workflows
+workflows:
+  build_deploy_gcp:
+    jobs:
+      - build_deploy_dev:
+          filters:
+            branches:
+              only:
+                - dev
+      - build_deploy_master:
+          filters:            
+            branches:
+              only:
+                - main
+
+                

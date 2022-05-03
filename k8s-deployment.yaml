@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: colibriapi
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: colibriapi
+  template:
+    metadata:
+      labels:
+        app: colibriapi
+    spec:
+      containers:
+      - name: colibriapi
+        image: ddcj/colibri-api:1.1.0
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: colibriapi
+  labels:
+    app: colibriapi
+spec:
+  selector:
+    app: colibriapi
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30000

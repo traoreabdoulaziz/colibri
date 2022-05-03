@@ -1,0 +1,37 @@
+version: '3.9'
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile-dev
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=colibri-test-349114-a30e8b514e6d.json
+      - ENV=local
+      - FIRESTORE_EMULATOR_HOST=firestore
+    volumes:
+      - ./src:/work/src
+      - ./.circleci:/work/.circleci
+      - ./requirements.txt:/work/requirements.txt
+      - ./Dockerfile:/work/Dockerfile
+      - ./Dockerfile-dev:/work/Dockerfile-dev
+    ports:
+      - 8000:80
+
+  storage:
+    image: fsouza/fake-gcs-server
+    ports:
+      - 4443:4443
+    volumes:
+      - ${PWD}/data:/data
+    command: -scheme http
+  firestore:
+    image: carneyc/gcloud-firestore-emulator
+    ports:
+      - "8080:8080"
+    
+      
+
+
+
+
+  
