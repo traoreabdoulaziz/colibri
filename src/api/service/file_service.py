@@ -1,8 +1,28 @@
 import datetime
 import os
 import tempfile
+import os
+from PIL import Image
+import qrcode
 from ...config.config import BUCKET_NAME,STORAGE_CLIENT,s3_client,s3_resource
 ENV = os.environ.get('ENV')
+
+
+# generate Qr_code
+def generate_qrcode(url:str):
+    qr = qrcode.QRCode(
+    version=1,
+    error_correction=qrcode.constants.ERROR_CORRECT_L,
+    box_size=10,
+    border=4)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image()
+    img.save("qr.png")
+    with open("qr.png", "rb") as image:
+        f =bytearray(image.read())
+    os.remove("qr.png")
+    return f
 
 
 ## function to upload file to cloud storage
@@ -55,3 +75,4 @@ def get_file_url_in_S3(image_name):
                 Params={'Bucket': 'data354-public-assets', 'Key': image_name},
                 ExpiresIn=60)
     return image_url
+

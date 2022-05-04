@@ -18,6 +18,8 @@ with open('secrets.json', 'r') as f:
 
 ## create app
 app = FastAPI(title="API",version='0.0.1')
+
+
 ### test the main page
 @app.get("/",  tags=["Endpoint Test"])
 def main_endpoint_test():
@@ -28,10 +30,7 @@ def main_endpoint_test():
 def generate_token(username:str=Form(...),password:str=Form(...)):
     user = authenticate_user(username=username, password=password)
     if not user:
-        raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED, 
-                    detail='invalid username or password'
-                )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='invalid username or password')
     user_obj = {
         "id":user.id,
         "username":user.username,

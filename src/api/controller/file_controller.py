@@ -4,11 +4,26 @@ from fastapi import APIRouter, File, Depends, UploadFile
 import datetime
 from ..model.user import User
 from ..service.auth import get_current_user
-from ..service.file_service import save_file_to_storage,download_file_to_storage,verify_file_existance
+from ..service.file_service import save_file_to_storage,download_file_to_storage,verify_file_existance,generate_qrcode
 
 
 router = APIRouter()
 DT_FMT_FN = '%Y%m%d%H%M%S'
+
+
+# save qrcode
+def save_qrcode(id:str):
+    output_folder = 'ACTIVITY/Activity-'+id+'/qrcode/'
+    output_fn = datetime.datetime.utcnow().strftime(DT_FMT_FN)
+    image_url = output_folder+output_fn
+    number=int(id)
+    public_key=number + 3000000 + (number*2)
+    #qrcode url
+    url="https://crystal-service-siews7qsrq-ue.a.run.app/login?pid="+str(public_key)
+    image=generate_qrcode(url)
+    ##Save qrcode to s3
+    save_file_to_storage(image_url,image)
+
 
 #Endpoint to store image taxpayer on Cloud Storage
 @router.post("/upload_taxpayer_info/", tags=["Upload taxpayer file to CLoud Storage"])
@@ -18,6 +33,7 @@ async def create_taxpayer_file(id: str,type:str, file: UploadFile= File(...), cu
     output_folder = 'TAXPAYER/Taxpayer-'+id+'/'+type+'/'
     output_fn = datetime.datetime.utcnow().strftime(DT_FMT_FN)
     image_url = output_folder+output_fn
+    # save the file²
     save_file_to_storage(image_url,file)
     return {"message":"File upload to Cloud Storage ","code":"1"}
 

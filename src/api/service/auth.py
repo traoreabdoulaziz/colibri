@@ -10,7 +10,7 @@ from ..service.user import findAuthUser
 ## define the url
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
-# verify the authentification
+# verify the authentification of the user
 def authenticate_user(username: str, password: str):
     user =  findAuthUser(username,password)
     if user:
@@ -18,7 +18,7 @@ def authenticate_user(username: str, password: str):
     else:
         return False
 
-##get current user
+##get current user information
 def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=['HS256'])
@@ -28,7 +28,6 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail='invalid username or password'
         )
-    
     return  user
 
 
