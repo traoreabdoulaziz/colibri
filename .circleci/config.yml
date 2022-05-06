@@ -1,93 +1,26 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-orbs:
-  gcp-gcr: circleci/gcp-gcr@0.13.0
-  cloudrun: circleci/gcp-cloud-run@1.0.2
 
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build_deploy_master:
+  say-hello:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
-      - image: circleci/python:3.8
-    environment:
-      IMAGE_NAME: colibri-image
-      REGISTRY_URL: docker.pkg.dev
+      - image: cimg/base:stable
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 19.03.13
-          docker_layer_caching: true
       - run:
-          name: Build app and Docker image
-          command: |
-            echo ${GCP_PROJECT_KEY} | base64 -d -i > $HOME/gcloud-service-key.json
-            echo 'export GOOGLE_CLOUD_KEYS=$(cat $HOME/gcloud-service-key.json)' >> $BASH_ENV
-            docker build -t $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME .
-      - gcp-gcr/gcr-auth:
-          gcloud-service-key: GOOGLE_CLOUD_KEYS
-          google-project-id: GOOGLE_PROJECT_ID
-          google-compute-zone: GOOGLE_COMPUTE_ZONE
-      - run:
-          name: push to artefact repository
-          command: |
-            gcloud auth configure-docker $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL
-            docker push $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
-      - cloudrun/deploy:
-          image: $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
-          platform: "managed"
-          region: $GOOGLE_COMPUTE_ZONE
-          service-name: $SERVICE_NAME
-          unauthenticated: true
-
-  build_deploy_dev:
-    docker:
-      - image: circleci/python:3.8
-    environment:
-      IMAGE_NAME: colibri-dev
-      REGISTRY_URL: docker.pkg.dev
-      ENV: dev
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 19.03.13
-          docker_layer_caching: true
-      - run:
-          name: decrypt secrets
-          command: |
-            ls
-            gpg --pinentry-mode=loopback --yes --passphrase="12345678" secrets.json.gpg
-      - run:
-          name: Build app and Docker image for dev
-          command: |
-            echo ${GCP_PROJECT_KEY} | base64 -d -i > $HOME/gcloud-service-key.json
-            echo 'export GOOGLE_CLOUD_KEYS=$(cat $HOME/gcloud-service-key.json)' >> $BASH_ENV
-            echo 'export GOOGLE_APPLICATION_CREDENTIALS=$(cat $HOME/gcloud-service-key.json)' >> $BASH_ENV
-            docker build -t $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME .
-      - gcp-gcr/gcr-auth:
-          gcloud-service-key: GOOGLE_CLOUD_KEYS
-          google-project-id: GOOGLE_PROJECT_ID
-          google-compute-zone: GOOGLE_COMPUTE_ZONE
-      - run:
-          name: push to artefact repository for dev
-          command: |
-            gcloud auth configure-docker $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL
-            docker push $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
-      - cloudrun/deploy:
-          image: $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
-          platform: "managed"
-          region: $GOOGLE_COMPUTE_ZONE
-          service-name: $SERVICE_NAME_DEV
-          unauthenticated: true
+          name: "Say hello"
+          command: "echo Hello, World!"
 
 # Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  build_deploy_gcp:
+  say-hello-workflow:
     jobs:
-      - build_deploy_dev:
-          filters:
-            branches:
-              only:
-                - dev
-      - build_deploy_master:
-          filters:
-            branches:
-              only:
-                - main
+      - say-hello
