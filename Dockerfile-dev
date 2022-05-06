@@ -1,0 +1,29 @@
+FROM python:3.8-slim
+
+
+# Install and update 
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
+    /usr/local/bin/python -m pip install --upgrade pip
+
+
+
+#ENV /app /app
+WORKDIR /work
+COPY ./requirements.txt /work
+
+COPY ./secrets.json /work
+COPY ./data /work
+COPY ./colibri-test-349114-a30e8b514e6d.json /work
+#COPY ./az.jpg /work
+
+#ENV GOOGLE_APPLICATION_CREDENTIALS=colibri-test-349114-a30e8b514e6d.json
+#ENV STORAGE_EMULATOR_HOST=http://localhost:4443
+#ENV ENV=local
+#ENV FIRESTORE_EMULATOR_HOST=[::1]:8612
+RUN pip install -r requirements.txt
+COPY . /work
+EXPOSE 80
+
+#RUN pytest
+CMD uvicorn src.main:app --host 0.0.0.0 --port 80 --reload
