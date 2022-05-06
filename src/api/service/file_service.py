@@ -11,6 +11,10 @@ ENV = os.environ.get("ENV")
 
 # generate Qr_code
 def generate_qrcode(url: str):
+    """This function is used to generate Qr_code
+    Args:
+        url (str): storage url
+    """
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -29,6 +33,11 @@ def generate_qrcode(url: str):
 
 ## function to upload file to cloud storage
 def save_file_to_storage(image_url, file):
+    """This function is used to save file to cloud storage
+    Args:
+        image_url (str): storage url
+        file (file): file to save
+    """
     bucket = STORAGE_CLIENT.get_bucket(BUCKET_NAME)
     blob = bucket.blob(image_url + "." + file.filename.split(".")[-1])
     blob.upload_from_file(file.file)
@@ -36,6 +45,13 @@ def save_file_to_storage(image_url, file):
 
 ## function to download file to cloud storage
 def download_file_to_storage(folder):
+    """This function is used to download file to cloud storage
+
+    Args:
+        folder (str): image folde to cloud storage
+    Returns:
+        url: image url to cloud storage
+    """
     bucket = STORAGE_CLIENT.get_bucket(BUCKET_NAME)
     key_tab = []
     for blob in bucket.list_blobs(prefix=folder):
@@ -52,6 +68,7 @@ def download_file_to_storage(folder):
 
 ## verify if file exist
 def verify_file_existance(folder):
+    """This function checks if file exist to cloud storage"""
     files = STORAGE_CLIENT.list_blobs(BUCKET_NAME, prefix=folder)
     if len(list(files)) == 0:
         return False

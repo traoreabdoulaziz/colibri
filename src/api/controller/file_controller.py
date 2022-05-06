@@ -16,6 +16,10 @@ DT_FMT_FN = "%Y%m%d%H%M%S"
 
 # save qrcode
 def save_qrcode(id: str):
+    """this function saves the qrcode of the activity to cloud storage
+    Args:
+        id (str): Id of the activity
+    """
     output_folder = "ACTIVITY/Activity-" + id + "/qrcode/"
     output_fn = datetime.datetime.utcnow().strftime(DT_FMT_FN)
     image_url = output_folder + output_fn
@@ -36,12 +40,19 @@ async def create_taxpayer_file(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
 ):
+    """This route upload the file of the taxpayer to cloud storage
+    Args:
+        id (str): Id of the taxpayer
+        type (str): type of the file
+        file (UploadFile, optional): content the file. Defaults to File(...).
+        current_user (User, optional): content the user information. Defaults to Depends(get_current_user).
+    """
     if type not in ["photo_id", "face_id", "certificate"]:
         return {"message": "Type not exist", "code": "0"}
     output_folder = "TAXPAYER/Taxpayer-" + id + "/" + type + "/"
     output_fn = datetime.datetime.utcnow().strftime(DT_FMT_FN)
     image_url = output_folder + output_fn
-    # save the file²
+    # save the file
     save_file_to_storage(image_url, file)
     return {"message": "File upload to Cloud Storage ", "code": "1"}
 
@@ -51,6 +62,14 @@ async def create_taxpayer_file(
 async def get_taxpayer_file(
     id: str, type: str, current_user: User = Depends(get_current_user)
 ):
+    """This function downloads the file of the taxpayer to cloud storage
+    Args:
+        id (str): Id of taxpayer
+        type (str): type of file
+        current_user (User, optional): user informations. Defaults to Depends(get_current_user).
+    Returns:
+        url: image url for the file download
+    """
     if type not in ["photo_id", "face_id", "certificate"]:
         return {"message": "Type not exist", "code": "0"}
     output_folder = "TAXPAYER/Taxpayer-" + id + "/" + type + "/"
@@ -69,6 +88,14 @@ async def create_activity_file(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
 ):
+
+    """This route upload the file of the activity to cloud storage
+    Args:
+        id (str): Id of the activity
+        type (str): type of the file
+        file (UploadFile, optional): content the file. Defaults to File(...).
+        current_user (User, optional): content the user information. Defaults to Depends(get_current_user).
+    """
     if type not in ["photo_activity", "cadaster", "certificate"]:
         return {"message": "Type not exist", "code": "0"}
     output_folder = "ACTIVITY/Activity-" + id + "/" + type + "/"
@@ -84,6 +111,14 @@ async def create_activity_file(
 async def get_activity_image(
     id: str, type: str, current_user: User = Depends(get_current_user)
 ):
+    """This function downloads the file of the activity to cloud storage
+    Args:
+        id (str): Id of activity
+        type (str): type of file
+        current_user (User, optional): user informations. Defaults to Depends(get_current_user).
+    Returns:
+        url: image url for the file download
+    """
     if type not in ["photo_activity", "cadaster", "certificate"]:
         return {"message": "Type not exist", "code": "0"}
     output_folder = "ACTIVITY/Activity-" + id + "/" + type + "/"
