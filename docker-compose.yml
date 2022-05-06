@@ -7,7 +7,7 @@ services:
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=colibri-test-349114-a30e8b514e6d.json
       - ENV=local
-      - FIRESTORE_EMULATOR_HOST=firestore:8080
+ #     - FIRESTORE_EMULATOR_HOST=firestore:8080
       - STORAGE_API_ENDPOINT=http://storage:4443
     volumes:
       - ./src:/work/src

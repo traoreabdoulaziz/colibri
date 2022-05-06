@@ -33,8 +33,8 @@ BUCKET_NAME = secret["BUCKET_NAME"]
 
 
 ## gcloud firestore
-# if ENV=='local':
-#     os.environ['FIRESTORE_EMULATOR_HOST']= "0.0.0.0:9000"
+if ENV == "local":
+    os.environ["FIRESTORE_EMULATOR_HOST"] = "firestore:8080"
 firebase_admin.initialize_app()
 FIRESTORE_DB = firestore.Client()
 fireorm.connect(FIRESTORE_DB)
