@@ -11,9 +11,11 @@ RUN apt-get update -y && \
 #ENV /app /app
 WORKDIR /work
 COPY ./requirements.txt /work
+
 COPY ./secrets.json /work
+COPY ./data /work
 COPY ./colibri-test-349114-a30e8b514e6d.json /work
-COPY ./az.jpg /work
+#COPY ./az.jpg /work
 
 #ENV GOOGLE_APPLICATION_CREDENTIALS=colibri-test-349114-a30e8b514e6d.json
 #ENV STORAGE_EMULATOR_HOST=http://localhost:4443
