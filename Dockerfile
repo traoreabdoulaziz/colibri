@@ -9,9 +9,9 @@ COPY ./secrets.json.gpg /app
 COPY ./secrets.json.gpg /app
 # Install production dependencies.
 RUN pip install -r requirements.txt
-
 COPY . /app
 ARG ENV
 ENV WORK=$ENV
 ENV GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+RUN echo ${WORK}
 CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker  src.main:app 
