@@ -60,7 +60,7 @@ jobs:
             echo ${GCP_PROJECT_KEY} | base64 -d -i > $HOME/gcloud-service-key.json
             echo 'export GOOGLE_CLOUD_KEYS=$(cat $HOME/gcloud-service-key.json)' >> $BASH_ENV
             echo 'export GOOGLE_APPLICATION_CREDENTIALS=$(cat $HOME/gcloud-service-key.json)' >> $BASH_ENV
-            docker build -t $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME .
+            docker build -t $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME_DEV/$IMAGE_NAME .
       - gcp-gcr/gcr-auth:
           gcloud-service-key: GOOGLE_CLOUD_KEYS
           google-project-id: GOOGLE_PROJECT_ID
@@ -71,7 +71,7 @@ jobs:
             gcloud auth configure-docker $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL
             docker push $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME_DEV/$IMAGE_NAME
       - cloudrun/deploy:
-          image: $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
+          image: $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME_DEV/$IMAGE_NAME
           platform: "managed"
           region: $GOOGLE_COMPUTE_ZONE
           service-name: $SERVICE_NAME_DEV
