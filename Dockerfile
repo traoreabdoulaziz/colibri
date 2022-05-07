@@ -5,7 +5,7 @@ FROM python:3.10-slim
 #ENV /app /app
 WORKDIR /app
 COPY ./requirements.txt /app
-COPY ./secrets.json.gpg /app
+COPY ./secrets.json /app
 COPY ./secrets.json.gpg /app
 # Install production dependencies.
 RUN pip install -r requirements.txt
@@ -14,4 +14,5 @@ ARG ENV
 ENV WORK=$ENV
 ENV GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
 RUN echo ${WORK}
+RUN echo ${GOOGLE_APPLICATION_CREDENTIALS}
 CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker  src.main:app 
