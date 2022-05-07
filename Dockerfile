@@ -7,13 +7,14 @@ WORKDIR /app
 COPY ./requirements.txt /app
 COPY ./secrets.json /app
 COPY ./secrets.json.gpg /app
+COPY ./gcloud-service-key.json /app
 # Install production dependencies.
 RUN pip install -r requirements.txt
 COPY . /app
 ARG ENV
 ARG GOOGLE
 ENV WORK=$ENV
-ENV GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE
+ENV GOOGLE_APPLICATION_CREDENTIALS=gcloud-service-key.json
 RUN echo ${WORK}
 RUN echo ${GOOGLE_APPLICATION_CREDENTIALS}
 CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker  src.main:app 
