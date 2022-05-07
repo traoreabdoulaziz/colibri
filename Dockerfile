@@ -11,8 +11,9 @@ COPY ./secrets.json.gpg /app
 RUN pip install -r requirements.txt
 COPY . /app
 ARG ENV
+ARG GOOGLE
 ENV WORK=$ENV
-ENV GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+ENV GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE
 RUN echo ${WORK}
 RUN echo ${GOOGLE_APPLICATION_CREDENTIALS}
 CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker  src.main:app 
