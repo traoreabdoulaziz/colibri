@@ -62,7 +62,7 @@ jobs:
             echo 'export GOOGLE_APPLICATION_CREDENTIALS=$(cat $HOME/gcloud-service-key.json)' >> $BASH_ENV
             echo 'export WORK="DEV"' >> $BASH_ENV
             echo $WORK
-            docker build --build-arg ENV=${WORK} -t $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME_DEV/$IMAGE_NAME -e .
+            docker build --build-arg ENV=${WORK} -t $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME_DEV/$IMAGE_NAME .
       - gcp-gcr/gcr-auth:
           gcloud-service-key: GOOGLE_CLOUD_KEYS
           google-project-id: GOOGLE_PROJECT_ID
