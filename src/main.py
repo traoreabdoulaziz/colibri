@@ -10,7 +10,7 @@ from .api.service.auth import authenticate_user
 import os
 
 ## load variable environment
-ENV = os.environ.get("ENV") or "local"
+ENV = os.environ.get("ENV")
 with open("secrets.json", "r") as f:
     secret = json.load(f)[ENV]
 
