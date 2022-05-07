@@ -10,9 +10,9 @@ from .api.service.auth import authenticate_user
 import os
 
 ## load variable environment
-ENV = os.environ.get("ENV")
-with open("secrets.json", "r") as f:
-    secret = json.load(f)[ENV]
+# ENV = os.environ.get("ENV")
+# with open("secrets.json", "r") as f:
+#     secret = json.load(f)[ENV]
 
 
 ## create app
