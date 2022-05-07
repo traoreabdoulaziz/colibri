@@ -8,8 +8,9 @@ jobs:
     docker:
       - image: circleci/python:3.8
     environment:
-      IMAGE_NAME: colibri-image
+      IMAGE_NAME: colibri-staging
       REGISTRY_URL: docker.pkg.dev
+      WORK: staging
     steps:
       - checkout
       - setup_remote_docker:
@@ -18,9 +19,9 @@ jobs:
       - run:
           name: Build app and Docker image
           command: |
-            echo ${GCP_PROJECT_KEY} | base64 -d -i > $HOME/gcloud-service-key.json
-            echo 'export GOOGLE_CLOUD_KEYS=$(cat $HOME/gcloud-service-key.json)' >> $BASH_ENV
-            docker build -t $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME .
+            echo ${GCP_PROJECT_KEY} | base64 -d -i > $HOME/project/gcloud-service-key.json
+            echo 'export GOOGLE_CLOUD_KEYS=$(cat $HOME/project/gcloud-service-key.json)' >> $BASH_ENV
+            docker build --build-arg ENV=${WORK} -t $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME_STAGING/$IMAGE_NAME .
       - gcp-gcr/gcr-auth:
           gcloud-service-key: GOOGLE_CLOUD_KEYS
           google-project-id: GOOGLE_PROJECT_ID
@@ -31,10 +32,10 @@ jobs:
             gcloud auth configure-docker $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL
             docker push $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
       - cloudrun/deploy:
-          image: $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
+          image: $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME_STAGING/$IMAGE_NAME
           platform: "managed"
           region: $GOOGLE_COMPUTE_ZONE
-          service-name: $SERVICE_NAME
+          service-name: $SERVICE_NAME_STAGING
           unauthenticated: true
 
   build_deploy_dev:
@@ -52,17 +53,13 @@ jobs:
       - run:
           name: decrypt secrets
           command: |
-            ls
             gpg --pinentry-mode=loopback --yes --passphrase="12345678" secrets.json.gpg
       - run:
           name: Build app and Docker image for dev
           command: |
             echo ${GCP_PROJECT_KEY} | base64 -d -i > $HOME/project/gcloud-service-key.json
             echo 'export GOOGLE_CLOUD_KEYS=$(cat $HOME/project/gcloud-service-key.json)' >> $BASH_ENV
-            echo 'export GOOGLE_APPLICATION_CREDENTIALS=$(cat $HOME/project/gcloud-service-key.json)' >> $BASH_ENV
-            echo 'export WORK="DEV"' >> $BASH_ENV
-            echo $WORK
-            docker build --build-arg ENV=${WORK} --build-arg GOOGLE=${GOOGLE_CLOUD_KEYS} -t $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME_DEV/$IMAGE_NAME .
+            docker build --build-arg ENV=${WORK} -t $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME_DEV/$IMAGE_NAME .
       - gcp-gcr/gcr-auth:
           gcloud-service-key: GOOGLE_CLOUD_KEYS
           google-project-id: GOOGLE_PROJECT_ID

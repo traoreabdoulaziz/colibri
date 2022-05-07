@@ -12,7 +12,6 @@ COPY ./gcloud-service-key.json /app
 RUN pip install -r requirements.txt
 COPY . /app
 ARG ENV
-ARG GOOGLE
 ENV WORK=$ENV
 ENV GOOGLE_APPLICATION_CREDENTIALS=gcloud-service-key.json
 RUN echo ${WORK}
