@@ -43,7 +43,7 @@ jobs:
     environment:
       IMAGE_NAME: colibri-dev
       REGISTRY_URL: docker.pkg.dev
-      ENV: dev
+      WORK: dev
     steps:
       - checkout
       - setup_remote_docker:

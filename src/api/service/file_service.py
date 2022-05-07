@@ -6,7 +6,7 @@ from PIL import Image
 import qrcode
 from ...config.config import BUCKET_NAME, STORAGE_CLIENT, s3_client, s3_resource
 
-ENV = os.environ.get("ENV")
+ENV = os.environ.get("WORK")
 
 
 # generate Qr_code
