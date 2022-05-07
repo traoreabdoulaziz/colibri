@@ -4,7 +4,7 @@ orbs:
   cloudrun: circleci/gcp-cloud-run@1.0.2
 
 jobs:
-  build_deploy_master:
+  build_deploy_staging:
     docker:
       - image: circleci/python:3.8
     environment:
@@ -86,7 +86,7 @@ workflows:
             branches:
               only:
                 - dev
-      - build_deploy_master:
+      - build_deploy_staging:
           filters:
             branches:
               only:
