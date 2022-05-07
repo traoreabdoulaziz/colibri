@@ -69,7 +69,7 @@ jobs:
           name: push to artefact repository for dev
           command: |
             gcloud auth configure-docker $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL
-            docker push $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
+            docker push $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME_DEV/$IMAGE_NAME
       - cloudrun/deploy:
           image: $GOOGLE_COMPUTE_ZONE-$REGISTRY_URL/$GOOGLE_PROJECT_ID/$SERVICE_NAME/$IMAGE_NAME
           platform: "managed"
